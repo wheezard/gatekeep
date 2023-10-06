@@ -58,7 +58,7 @@ It's worth mentioning that `DefaultKey` is a `symbol`, also exported from `gkeep
 
 ### Working with errors
 
-The `check()` function returns either `true`, if the check was successful, or a `GatekeepError`, which describes, what went wrong. To simplify working with errors, you may also use `gkeep/errors` and `gkeep/parser` exports.
+The `check()` function returns either `true`, if the check was successful, or a `GatekeepError`, which describes what went wrong. To simplify working with errors, you may also use `gkeep/errors` and `gkeep/parser` exports.
 
 #### /errors
 

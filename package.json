@@ -22,6 +22,7 @@
     }
   },
   "files": ["./dist"],
+  "repository": "https://github.com/wheezard/gatekeep",
   "scripts": {
     "build": "tsc --project tsconfig.esm.json && tsc --project tsconfig.cjs.json"
   },
