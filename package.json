@@ -1,0 +1,31 @@
+{
+  "name": "gkeep",
+  "version": "1.0.0",
+  "description": "A very fast runtime type-checker",
+  "main": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/esm/index.js"
+    },
+    "./errors": {
+      "import": "./dist/esm/errors.js",
+      "require": "./dist/cjs/errors.js",
+      "default": "./dist/esm/errors.js"
+    },
+    "./parser": {
+      "import": "./dist/esm/parser.js",
+      "require": "./dist/cjs/parser.js",
+      "default": "./dist/esm/parser.js"
+    }
+  },
+  "files": ["./dist"],
+  "scripts": {
+    "build": "tsc --project tsconfig.esm.json && tsc --project tsconfig.cjs.json"
+  },
+  "keywords": [],
+  "author": "wheezard",
+  "license": "ISC"
+}
