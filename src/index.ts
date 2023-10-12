@@ -123,17 +123,39 @@ export function WithOptional(required: Record<any, GateKeepType>, optional: Reco
 export function uni(types: GateKeepType[]) {
 	(types as GateKeepInternalType).gk = GateKeepTag;
 	(types as GateKeepInternalType).tag = UnionTag;
-	return types as GateKeepInternalType;
+	return types as (GateKeepType[] & Tagged<typeof UnionTag>);
 }
-/** An alias for `Object.assign({}, ...types)` */
+function isUnion(type: GateKeepType): type is (GateKeepType[] & Tagged<typeof UnionTag>) {
+	return type['gk'] == GateKeepTag && type['tag'] == UnionTag
+};
+/** Combines objects and unions of objects, the result would match every possible combination of the unions provided. */
 export function join(types: GateKeepType[]) {
 	if (types.length == 1) return types[0];
-	if (types.length == 2) {
+	if (types.length == 2 && !isUnion(types[0]) && !isUnion(types[1])) {
 		// For performance
 		return Object.assign({}, types[0], types[1])
 	}
-	return Object.assign({}, ...types)
+	const finalUnion = uni([{}]);
+	types.forEach(type => {
+		if (isUnion(type)) {
+			const unionCopy = finalUnion.slice();
+			finalUnion.length = 0;
+
+			type.forEach(miniType => {
+				const copy = unionCopy.map(o => Object.assign({}, o, miniType));
+				copy.forEach(o => finalUnion.push(o))
+			})
+
+		} else {
+			finalUnion.forEach(o => {
+				Object.assign(o, type)
+			})
+		}
+	})
+	return finalUnion;
 }
+
+const hasOwn = Object.prototype.hasOwnProperty;
 
 function isThing(v: any, typeofValue: string, classOfValue: any) {
 	return typeof v == typeofValue || (typeof v == 'object' && v instanceof classOfValue)
@@ -151,9 +173,9 @@ function checkerResultCheck(result: boolean | string): true | GatekeepError {
 /** `strict` means return an error when the key from the value isn't found in type */
 function checkObject(type: Record<string | number | symbol, GateKeepType>, value: Record<any, any>, strict = true): true | GatekeepError {
 	for (const key in value) {
-		if (Object.prototype.hasOwnProperty.call(value, key) != true) continue;
+		if (hasOwn.call(value, key) != true) continue;
 
-		if (!(key in type)) if (DefaultKey in type) {
+		if (!hasOwn.call(type, key)) if (DefaultKey in type) {
 			const resDefault = check(type[DefaultKey], value[key]);
 			if (resDefault !== true) return { e: "ObjectError", error: resDefault, key: `${key} -> [DefaultKey]` };
 
@@ -272,7 +294,7 @@ export function check(type: GateKeepType, value: any): true | GatekeepError {
 		if (res !== true) return res;
 
 		for (const key in type) {
-			if (!(key in value)) return { e: "ObjectRequiredKeyMissing", key };
+			if (!hasOwn.call(value, key)) return { e: "ObjectRequiredKeyMissing", key };
 		}
 		return true;
 
