@@ -1,11 +1,10 @@
 {
   "name": "gkeep",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A very fast runtime type-checker",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
-  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
